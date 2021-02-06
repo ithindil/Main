@@ -124,5 +124,3 @@ Function get-crc32
     echo ""
     echo ""
 }
-
-#get-crc32 "FileFullPath"
