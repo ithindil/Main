@@ -2,15 +2,15 @@
 
 function Get-WebRequestTable {
     param(
-    [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
 
-    $WebRequest,
+        $WebRequest,
 
    
 
-    [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
 
-    [int] $TableNumber
+        [int] $TableNumber
 
     )
 
@@ -26,9 +26,7 @@ function Get-WebRequestTable {
 
     ## Go through all of the rows in the table
 
-    foreach($row in $rows)
-
-    {
+    foreach ($row in $rows) {
 
         $cells = @($row.Cells)
 
@@ -36,9 +34,7 @@ function Get-WebRequestTable {
 
         ## If we've found a table header, remember its titles
 
-        if($cells[0].tagName -eq "TH")
-
-        {
+        if ($cells[0].tagName -eq "TH") {
 
             $titles = @($cells | ForEach-Object { ("" + $_.InnerText).Trim() })
 
@@ -48,9 +44,7 @@ function Get-WebRequestTable {
 
         ## If we haven't found any table headers, make up names "P1", "P2", etc.
 
-        if(-not $titles)
-
-        {
+        if (-not $titles) {
 
             $titles = @(1..($cells.Count + 2) | ForEach-Object { "P$_" })
 
@@ -64,13 +58,11 @@ function Get-WebRequestTable {
 
         $resultObject = [Ordered] @{}
 
-        for($counter = 0; $counter -lt $cells.Count; $counter++)
-
-        {
+        for ($counter = 0; $counter -lt $cells.Count; $counter++) {
 
             $title = $titles[$counter]
 
-            if(-not $title) { continue }
+            if (-not $title) { continue }
 
         
 
@@ -87,15 +79,14 @@ function Get-WebRequestTable {
 }
 
 
-$URL = 'https://nyaa.si/user/puyero?f=0&c=0_0&q=Akame'
+$URL = 'https://nyaa.si/user/puyero?f=0&c=0_0&q=akatsuki no yona'
 $WebRequest = Invoke-WebRequest $url
 
-$1 = Get-WebRequestTable $WebRequest -TableNumber 0 | Sort-Object Name 
-                                                                                              
-$1 | Select-Object  Name, @{Name='Date';Expression={Get-Date ($_.Size) -Format 'dd.MM.yyyy'}}
+$Results = Get-WebRequestTable (Invoke-WebRequest $url) -TableNumber 0 `
+| Sort-Object Name `
+| Select-Object  Name, @{Name = 'Date'; Expression = { Get-Date ($_.Size) -Format 'dd.MM.yyyy' } }
+                                                          S                                    
+$Results
 
-
-
-
-
-
+Write-Host "$($Results.count)" -ForegroundColor Green -NoNewline
+Write-Host " Episodios Encontrados" 
