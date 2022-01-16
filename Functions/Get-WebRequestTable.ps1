@@ -85,7 +85,7 @@ $WebRequest = Invoke-WebRequest $url
 $Results = Get-WebRequestTable (Invoke-WebRequest $url) -TableNumber 0 `
 | Sort-Object Name `
 | Select-Object  Name, @{Name = 'Date'; Expression = { Get-Date ($_.Size) -Format 'dd.MM.yyyy' } }
-                                                          S                                    
+                            
 $Results
 
 Write-Host "$($Results.count)" -ForegroundColor Green -NoNewline
