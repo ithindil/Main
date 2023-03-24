@@ -33,31 +33,49 @@
 # https://creativecommons.org/licenses/by/4.0/
 #
 
-set -x
+# chown nobody:users test.sh
+# chmod u+x test.sh
+
+# print the script
+# set -x
 
 torrentID=$1
 torrentName=$2
 torrentPath=$3
 
-#srcDir="${HOME}/seeding"
-#destDir="${HOME}/downloads"
-srcDir="/data/torrents/UnionFansub"
+# Files downloaded to location where must be seeded by label
+UnionFansub="/data/torrents/UnionFansub"
+# Folder were Hardlinks must be created at:
 destDir="/data/torrents/Anime"
-
-# either empty, or has a leading slash
-label="${torrentPath#$srcDir}"
 
 # note that srcPath may be a file, not necessarily a
 # directory. In which case, the same is true for destPath.
 srcPath="${torrentPath}/${torrentName}"
-destPath="${destDir}${label}/${torrentName}"
+destPath="${destDir}/${torrentName}"
 
-echo "${torrentID} \"${torrentName}\" \"${torrentPath}\" ${label}" >> ~/logs/torrent-complete.log
+if [[ $torrentPath -ef $UnionFansub ]] ; then
+    echo "Creating Hardlink for ${torrentID} \"${torrentName}\" \"${torrentPath}\" to: ${destPath}" >> /config/torrent-complete.log
+    if [[ -d $srcPath ]] ; then
+        echo "Destination is a Folder" >> /config/torrent-complete.log
+        # srcPath is a directory, so make sure destPath exists and is a directory,
+        # then change the owner and group, the permissions and
+        # recursively link the *contents* of the srcPath directory into destPath
+        echo "Creating directory: ${destPath}" >> /config/torrent-complete.log
+        mkdir -p "${destPath}"
+        chown nobody:users "${destPath}"
+        chmod 777 "${destPath}"
+        echo "Creating Hardlinks for each file" >> /config/torrent-complete.log
+        cp -vrl -t "${destDir}" "${srcPath}"
+    else
+        echo "Destination is a File" >> /config/torrent-complete.log
+        # srcPath is a file, so just link it
+        echo "Creating Hardlink for the file" >> /config/torrent-complete.log
+        cp -vl -t "${destDir}" "${srcPath}"
+    fi
+else 
+    echo "NOT Creating Hardlink $torrentPath <-> $UnionFansub" >> /config/torrent-complete.log
+fi
 
-# Non-rar files are always hardlinked to the destination.
-
-# mkdir -p "${destPath}"
-cp -vrl -t "${destDir}${label}" "${srcPath}"
 
 # We may be given a file or a directory. If it's a directory, it may contain one or more rar files, in which case
 # we unpack each one directly into the destination hierarchy.
