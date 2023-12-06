@@ -40,15 +40,17 @@ function Get-MKVTrackInfo {
    
 }
 
-$FilePath = "\\SERVER\Anime\[PuyaSubs!] Argevollen\[PuyaSubs!] Argevollen - 01 [720p][99654686].mkv"
+$FilePath = "\\SERVER\Storage\Torrents\Anime\[PuyaSubs!] Hamatora"
 Get-MKVTrackInfo -File $FilePath
 
 
-$Folder = Get-ChildItem -LiteralPath "\\SERVER\Anime\[PuyaSubs!] Argevollen\"
+$Folder = Get-ChildItem -LiteralPath '\\server\Storage\Torrents\Anime\' -Recurse -File | `
+    Where-Object {$_.Name -like '*heavy*'}
 
 foreach ($FilePath in $Folder) {
-    "####################################################"
+    "########################################################################################################"
     $FilePath.Name
+    "--------------------------------------------------------------------------------------------------------"
     Get-MKVTrackInfo -File $FilePath.FullName
 }
 
