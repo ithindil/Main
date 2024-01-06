@@ -45,7 +45,7 @@ Get-MKVTrackInfo -File $FilePath
 
 
 $Folder = Get-ChildItem -LiteralPath '\\server\Storage\Torrents\Anime\' -Recurse -File | `
-    Where-Object {$_.Name -like '*heavy*'}
+    Where-Object {$_.Name -like '*Hikikomari *'} | Sort-Object
 
 foreach ($FilePath in $Folder) {
     "########################################################################################################"
