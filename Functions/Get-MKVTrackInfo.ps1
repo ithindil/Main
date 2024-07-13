@@ -39,13 +39,14 @@ function Get-MKVTrackInfo {
     Return $Array
    
 }
-
+<#
 $FilePath = "\\SERVER\Storage\Torrents\Anime\[PuyaSubs!] Hamatora"
 Get-MKVTrackInfo -File $FilePath
+#>
 
-
+$search = 'Book of the Atlantic'
 $Folder = Get-ChildItem -LiteralPath '\\server\Storage\Torrents\Anime\' -Recurse -File | `
-    Where-Object {$_.Name -like '*Hikikomari *'} | Sort-Object
+    Where-Object {$_.Name -like "*$search*"} | Sort-Object
 
 foreach ($FilePath in $Folder) {
     "########################################################################################################"
