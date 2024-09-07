@@ -11,17 +11,17 @@ $seriesList = (Invoke-RestMethod -Method Get -Uri "https://$shokoHost/api/v3/Ser
 
 # Get all TMDB Links
 $tmbdbList = @()
-$apis = @('Movie', 'Show')
-foreach ($api in $apis) {
-    $tmbdbList += (Invoke-RestMethod -Method Get -Uri "https://$shokoHost/api/v3/Tmdb/$($api)?restricted=true&pageSize=0" -Headers $headers -ContentType 'application/json').List
+$enpoints = @('Movie', 'Show')
+foreach ($enpoint in $enpoints) {
+    $tmbdbList += (Invoke-RestMethod -Method Get -Uri "https://$shokoHost/api/v3/Tmdb/$($enpoint)?restricted=true&pageSize=0" -Headers $headers -ContentType 'application/json').List
 }
 
 # Schedule Auto Search for TMDB Missing Links
-foreach ($tmdb in $tmbdbList) {
-    $linkedSeries = $seriesList | Where-Object { $tmdb.ID -in $_.IDs.TMDB.Movie -or $tmdb.ID -in $_.IDs.TMDB.Show }
+foreach ($series in $seriesList) {
+    $seriesTMDB = $tmbdbList | Where-Object { $_.ID -in $series.IDs.TMDB.Movie -or $_.ID -in $series.IDs.TMDB.Show }
 
-    if (!$linkedSeries) {
-        "Scheduling Auto Search for: " + $tmdb.Title
+    if (!$seriesTMDB) {
+        "Scheduling Auto Search for: " + $series.Name
         $null = Invoke-RestMethod -Method Post -Uri "https://$shokoHost/api/v3/Series/$($series.IDs.ID)/TMDB/Action/AutoSearch" -Headers $headers -ContentType 'application/json'
     }
 }
@@ -72,7 +72,7 @@ foreach ($endpoint in $endpoints) {
 }
 
 ####################################################################################
-### Set Auto Match for TMDB and Trackt on All Series
+### Schedule TMDB Auto Search for All Series
 ####################################################################################
 $shokoHost = 'site.domain.com' # Set the DNS or the IP of Shoko Server
 $headers = @{
